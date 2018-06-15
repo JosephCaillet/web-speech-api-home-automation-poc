@@ -1,0 +1,177 @@
+body {
+	font-family: Verdana;
+	background-color: #ecf0f1;
+	font-size: 1.15em;
+	margin: 0;
+}
+
+h1 {
+	text-align: center;
+	color: #7f8c8d;
+}
+
+a {
+	color: #34495e;
+}
+
+.interaction {
+	margin: auto;
+	margin-top: 2em;
+	width: 80%;
+	text-align: center;
+	color: #2c3e50;
+}
+
+.microphone {
+	border: none;
+	display: block;
+	margin: 1.5em auto;
+	background-color: #3498db;
+	border-radius: 100%;
+	padding: 5%;
+	width: 20vh;
+	height: 20vh;
+	transition: all 0.3s linear;
+	cursor: pointer;
+}
+
+.microphone.active  img{
+	transform: scale(2);
+	animation: 1.5s microphone-active ease-in-out infinite alternate
+}
+
+.microphone.active {
+	background-color: #8e44ad;
+}
+
+@keyframes microphone-active {
+	from {
+		/* background-color: #c0392b; */
+		transform: scale(1);
+  }
+
+  to {
+		/* background-color: #c0392b; */
+		transform: scale(1.15);
+  }
+}
+
+.microphone img {
+	width: 100%
+}
+
+.devices {
+	display: grid;
+	grid-template-columns: 25%, 25%, 50%;
+	grid-column-gap: 1%;
+	width: 80%;
+	margin: auto;
+	margin-top: 2em;
+}
+
+.devices > div {
+	padding: 0em;
+	/* height: 10em; */
+}
+
+.devices img {
+	width: 40%
+}
+
+.light {
+	border: 0.15em #f1c40f solid;
+	grid-column: 1;
+}
+
+.light.on {
+	background-color: #f1c40f;
+}
+.light.off {
+	background-color: #bdc3c7;
+}
+
+.temperature {
+	border: 0.15em #e74c3c solid;
+	grid-column: 2;
+}
+
+.temperature.on {
+	background-color: #e74c3c;
+}
+.temperature.off {
+	background-color: #bdc3c7;
+}
+
+.video {
+	border: 0.15em #2ecc71 solid;
+	grid-column: 3;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.video div {
+	border: 0.15em #2ecc71 solid;
+	margin: 0.2em;
+}
+
+.video div.on {
+	background-color: #2ecc71;
+}
+.video div.off {
+	background-color: #bdc3c7;
+}
+
+.video img {
+	width: 15%;
+	margin-left: 0.5em;
+}
+
+.light, .temperature, .video div {
+	display:flex;justify-content:center;align-items:center;
+}
+
+.info-button {
+	position: fixed;
+	bottom: 1em;
+	right: 1em;
+	width: 3em;
+	cursor: pointer;
+}
+
+.about-modal {
+	position: fixed;
+	top: 10vh;
+	/* left: 15vw; */
+	background-color: #7f8c8d;
+	width: 100vw;
+	height: 90vh;
+	/* margin: auto; */
+	display: block;
+	transition: all 0.5s ease-in-out;
+	transform: translateY(110vh);
+	color: #ecf0f1;
+}
+
+.about-modal-close {
+	position: absolute;
+	bottom: 0.6em;
+	right: 0.6em;
+	width: 2.25em;
+	cursor: pointer;
+}
+
+.about-modal a {
+	color: #bdc3c7;
+}
+.about-modal.active {
+	transform: translateY(0%)
+}
+
+.about-modal img {
+	margin: 1em;
+}
+
+.about-modal-content {
+	display: block;
+	text-align: center;
+}
