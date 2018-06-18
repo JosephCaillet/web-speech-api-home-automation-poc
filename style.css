@@ -81,25 +81,21 @@ a {
 .light {
 	border: 0.15em #f1c40f solid;
 	grid-column: 1;
+	background-color: #bdc3c7;
 }
 
 .light.on {
 	background-color: #f1c40f;
 }
-.light.off {
-	background-color: #bdc3c7;
-}
 
-.temperature {
+.heating {
 	border: 0.15em #e74c3c solid;
 	grid-column: 2;
+	background-color: #bdc3c7;
 }
 
-.temperature.on {
+.heating.on {
 	background-color: #e74c3c;
-}
-.temperature.off {
-	background-color: #bdc3c7;
 }
 
 .video {
@@ -112,13 +108,11 @@ a {
 .video div {
 	border: 0.15em #2ecc71 solid;
 	margin: 0.2em;
+	background-color: #bdc3c7;
 }
 
 .video div.on {
 	background-color: #2ecc71;
-}
-.video div.off {
-	background-color: #bdc3c7;
 }
 
 .video img {
@@ -126,7 +120,7 @@ a {
 	margin-left: 0.5em;
 }
 
-.light, .temperature, .video div {
+.light, .heating, .video div {
 	display:flex;justify-content:center;align-items:center;
 }
 
@@ -147,7 +141,7 @@ a {
 	height: 90vh;
 	/* margin: auto; */
 	display: block;
-	transition: all 0.5s ease-in-out;
+	transition: transform 0.5s ease-in-out;
 	transform: translateY(110vh);
 	color: #ecf0f1;
 }
@@ -174,4 +168,10 @@ a {
 .about-modal-content {
 	display: block;
 	text-align: center;
+}
+
+.easteregg.active {
+	text-align: center;
+	margin-top: 10vh;
+	margin-bottom: 60vh;
 }

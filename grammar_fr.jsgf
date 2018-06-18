@@ -1,0 +1,18 @@
+#JSGF V1.0 UTF-8 ja;
+
+/**
+  * Define possible voice interaction (in french) with isen brest living lab.
+  *
+  * @author Joseph Caillet
+  * @version 0.1beta
+  */
+grammar fr.isen.brest.livinglab;
+
+<onoff> = (allume {ON} | éteint {OFF})
+public <light> = (<onoff> la lumière) {LIGHT}
+public <heating> = (<onoff> le chauffage) {HEATING}
+
+public <temperatureFetch> = ((quelle est la temperature) | (combien fait-il) [dans la piéce]) {TEMPERATURE}
+
+<cameraLocation> = (l'entrée) {ENTRANCE} | (la télévision) {TV} | (le canapé) {SOFA} | (la cuisine) {KITCHEN} | (le lit) {BED} | (le sol) {DOWN}
+public <cameraMove> = ((regarde vers) | (déplace la camera vers) <cameraLocation>) {CAMERA}
