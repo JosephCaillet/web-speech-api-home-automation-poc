@@ -10,12 +10,22 @@ var intents = [
 		pattern: /(allume|étein.) la lumière/,
 		action: matches => {
 			if (matches[1] == "allume") {
-				$(".light").addClass("on")
-				setSpeechOut("Lumiére allumée.")
+				Lights.turn("on").then(() => {
+					$(".light").addClass("on")
+					setSpeechOut("Lumiére allumée.")
+				}, err => {
+					setSpeechOut("Je n'ai pas réussi à allumer la lumière, désolé.")
+					console.error(err)
+				})
 				return
 			}
-			setSpeechOut("Lumiére éteinte.")
-			$(".light").removeClass("on")
+			Lights.turn("off").then(() => {
+				$(".light").removeClass("on")
+				setSpeechOut("Lumiére éteinte.")
+			}, err => {
+				setSpeechOut("Je n'ai pas réussi à éteindre la lumière, désolé.")
+				console.error(err)
+			})
 		}
 	},
 	{
@@ -35,41 +45,56 @@ var intents = [
 		name: "temperature-fetch",
 		pattern: /(quelle est la température)|(combien fait-il)/,
 		action: () => {
-			setSpeechOut("Il fait 20°C.")
+			Temperature.fetch().then(temp => {
+				setSpeechOut(`Il fait ${temp}°C.`)
+			}, err => {
+				setSpeechOut("Je n'ai pas réussi à récupérer la valeur de la température, désolé.")
+				console.error(err)
+			})
 		}
 	},
 	{
 		name: "camera-move",
-		pattern: /(?:(?:regarde)|(?:déplace la caméra vers)) ((?:l'entrée)|(?:la télévision)|(?:le canapé)|(?:la cuisine)|(?:le lit)|(?:le sol))/,
+		pattern: /(?:(?:regarde(?: vers)?)|(?:déplace la caméra vers)) ((?:l'entrée)|(?:la télévision)|(?:le canapé)|(?:la cuisine)|(?:le lit)|(?:le sol))/,
 		action: matches => {
-			$(".video div").removeClass("on")
 			console.log(4, matches[1])
+			let camPromise
+			let zoneDiv
 			switch (matches[1]) {
 				case "l'entrée":
-					setSpeechOut("Camera déplacée vers l'entrée.")
-					$(".zone-entrance").addClass("on")
+					camPromise = Camera.moveCamera(Camera.zones.ENTRANCE)
+					zoneDiv = $(".zone-entrance")
 					break
 				case "la télévision":
-					setSpeechOut("Camera déplacée vers la TV.")
-					$(".zone-tv").addClass("on")
+					camPromise = Camera.moveCamera(Camera.zones.TV)
+					zoneDiv = $(".zone-tv")
 					break
 				case "le canapé":
-					setSpeechOut("Camera déplacée vers le canapé.")
-					$(".zone-sofa").addClass("on")
+					camPromise = Camera.moveCamera(Camera.zones.SOFA)
+					zoneDiv = $(".zone-sofa")
 					break
 				case "la cuisine":
-					setSpeechOut("Camera déplacée vers la cuisine.")
-					$(".zone-kitchen").addClass("on")
+					camPromise = Camera.moveCamera(Camera.zones.KITCHEN)
+					zoneDiv = $(".zone-kitchen")
 					break
 				case "le lit":
-					setSpeechOut("Camera déplacée vers le lit.")
-					$(".zone-bed").addClass("on")
+					camPromise = Camera.moveCamera(Camera.zones.BED)
+					zoneDiv = $(".zone-bed")
 					break
 				case "le sol":
-					setSpeechOut("Camera déplacée vers le sol.")
-					$(".zone-down").addClass("on")
+					camPromise = Camera.moveCamera(Camera.zones.DOWN)
+					zoneDiv = $(".zone-down")
 					break
 			}
+
+			camPromise.then(() => {
+				setSpeechOut(`Camera déplacée vers ${matches[1]}.`)
+				$(".video div").removeClass("on")
+				zoneDiv.addClass("on")
+			}, err => {
+				console.error(err)
+			})
+
 		}
 	},
 ]
@@ -81,7 +106,7 @@ window.onload = () => {
 	$(".light, .heating, .video div").click(e => $(e.target).toggleClass("on"))
 	$(".info-button, .about-modal-close").click(() => {
 		$(".about-modal").toggleClass("active")
-		if($(".easteregg").hasClass("active")) {
+		if ($(".easteregg").hasClass("active")) {
 			setSpeechOut("Vous avez aimé ?")
 		}
 		$(".easteregg").html("").removeClass("active")
@@ -112,14 +137,14 @@ function setupRecognition(jsgf) {
 		$(".microphone").removeClass("active")
 	}
 
-	// recognition.onspeechstart = () => console.log('speech start')
-	// recognition.onspeechend = () => console.log('speech end')
+	recognition.onspeechstart = () => console.log('speech start')
+	recognition.onspeechend = () => console.log('speech end')
 
-	// recognition.onsoundstart = () => console.log('sound start')
-	// recognition.onsoundend = () => console.log('sound end')
+	recognition.onsoundstart = () => console.log('sound start')
+	recognition.onsoundend = () => console.log('sound end')
 
-	// recognition.onaudiostart = () => console.log('audio start')
-	// recognition.onaudioend = () => console.log('audio end')
+	recognition.onaudiostart = () => console.log('audio start')
+	recognition.onaudioend = () => console.log('audio end')
 
 	recognition.onnomatch = () => {
 		console.warn('no match')
@@ -136,7 +161,7 @@ function setupRecognition(jsgf) {
 		checkIntents(transcript)
 	}
 
-	$(".microphone").click(() => {
+	recognitionStartStop = () => {
 		if ($(".microphone").hasClass("active")) {
 			recognition.abort()
 			$(".microphone").removeClass("active")
@@ -144,7 +169,16 @@ function setupRecognition(jsgf) {
 		}
 		$(".microphone").addClass("active")
 		recognition.start()
-	})
+	}
+
+	$(".microphone").click(recognitionStartStop)
+	$(document).keypress(e => {
+		console.log(1)
+		if(e.which == 32) {
+			console.log(2)
+        recognitionStartStop()
+    }
+});
 }
 
 function checkIntents(transcript) {
@@ -175,6 +209,10 @@ function setSpeechOut(outputText) {
 	SpeechSynthesis.speak(speechUtterance);
 }
 
+/*
+  seriousness ends here
+*/
+
 function setUpEasterEgg() {
 	intents = intents.concat([
 		{
@@ -198,6 +236,13 @@ function setUpEasterEgg() {
 			action: () => {
 				setSpeechOut("Humm...")
 				setTimeout(() => unicorn('rick'), 500)
+			}
+		},
+		{
+			name: "baguette",
+			pattern: /baguette/i,
+			action: () => {
+				setSpeechOut("Nous n'avons pas compris votre demande. Pour une baguette, dîtes baguette.")
 			}
 		},
 	])

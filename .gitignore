@@ -1,0 +1,4 @@
+creds.json
+caddy
+node_modules/
+client/js/creds.js
